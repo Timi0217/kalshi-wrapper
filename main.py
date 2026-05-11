@@ -54,18 +54,27 @@ body{
 }
 h1{
   font-family:monospace;
-  font-style:italic;
   font-size:28px;
   color:#3498DB;
-  font-weight:600;
+  font-weight:700;
 }
-.health-badge{
-  background:rgba(52,152,219,.15);
-  color:#3498DB;
-  padding:4px 12px;
-  border-radius:12px;
-  font-size:12px;
-  font-weight:500;
+.health{
+  font-family:monospace;
+  font-size:13px;
+  color:#555;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.health .d{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#555;
+  transition:background .3s;
+}
+.health .d.on{
+  background:#4CAF50;
 }
 .subtitle{
   color:#888;
@@ -224,7 +233,7 @@ h1{
 <div class="container">
   <div class="header">
     <h1>Kalshi</h1>
-    <div class="health-badge" id="health-badge">\\u2022 checking</div>
+    <div class="health"><span class="d" id="dot"></span><span id="health-text">connecting...</span></div>
   </div>
   <div class="subtitle">Prediction markets \\u2014 economics, politics, climate, tech</div>
 
@@ -260,20 +269,14 @@ h1{
 
 <script>
 async function checkHealth() {
+  const t0 = Date.now();
   try {
-    const res = await fetch('/health');
-    const data = await res.json();
-    const badge = document.getElementById('health-badge');
-    if (data.status === 'healthy') {
-      badge.textContent = '\\u2022 healthy';
-      badge.style.background = 'rgba(46,204,113,.15)';
-      badge.style.color = '#2ecc71';
-    }
+    await fetch('/health');
+    const ms = Date.now() - t0;
+    document.getElementById('dot').classList.add('on');
+    document.getElementById('health-text').textContent = 'online \\u00B7 ' + ms + 'ms';
   } catch (e) {
-    const badge = document.getElementById('health-badge');
-    badge.textContent = '\\u2022 error';
-    badge.style.background = 'rgba(231,76,60,.15)';
-    badge.style.color = '#e74c3c';
+    document.getElementById('health-text').textContent = 'offline';
   }
 }
 
