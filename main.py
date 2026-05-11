@@ -4,6 +4,7 @@ from typing import Optional
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import HTMLResponse
 import httpx
 
 
@@ -22,6 +23,374 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Kalshi Wrapper", lifespan=lifespan)
+
+
+HOME_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kalshi Prediction Markets</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0a0a0a;
+  color:#e8e8e8;
+  font-family:system-ui,-apple-system,sans-serif;
+  padding:40px 20px;
+  line-height:1.5;
+}
+.container{
+  max-width:640px;
+  margin:0 auto;
+  animation:fadeIn 0.6s ease-out;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+h1{
+  font-family:monospace;
+  font-style:italic;
+  font-size:28px;
+  color:#3498DB;
+  font-weight:600;
+}
+.health-badge{
+  background:rgba(52,152,219,.15);
+  color:#3498DB;
+  padding:4px 12px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:500;
+}
+.subtitle{
+  color:#888;
+  font-size:14px;
+  margin-bottom:32px;
+}
+.card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  padding:24px;
+  margin-bottom:24px;
+}
+.section-title{
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:#666;
+  font-weight:600;
+  margin-bottom:16px;
+}
+.market-card{
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:12px;
+  transition:all 0.2s ease;
+}
+.market-card:hover{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(52,152,219,.3);
+}
+.market-title{
+  font-size:14px;
+  font-weight:500;
+  margin-bottom:12px;
+  color:#e8e8e8;
+  line-height:1.4;
+}
+.prob-bar-container{
+  background:rgba(255,255,255,.05);
+  height:24px;
+  border-radius:6px;
+  overflow:hidden;
+  position:relative;
+  margin-bottom:8px;
+}
+.prob-bar-fill{
+  background:linear-gradient(90deg, #3498DB, #2980B9);
+  height:100%;
+  transition:width 0.5s ease;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding-right:8px;
+}
+.prob-bar-pct{
+  color:#fff;
+  font-size:11px;
+  font-weight:600;
+  font-family:monospace;
+}
+.price-text{
+  font-family:monospace;
+  font-size:12px;
+  color:#999;
+  margin-bottom:4px;
+}
+.volume-text{
+  font-size:11px;
+  color:#666;
+}
+.category-tags{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:24px;
+}
+.tag{
+  background:rgba(255,255,255,.05);
+  color:#888;
+  padding:6px 12px;
+  border-radius:12px;
+  font-size:11px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.search-form{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+}
+.search-input{
+  flex:1;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;
+  padding:12px 16px;
+  color:#e8e8e8;
+  font-size:14px;
+  outline:none;
+  transition:all 0.2s;
+}
+.search-input:focus{
+  border-color:#3498DB;
+  background:rgba(255,255,255,.08);
+}
+.search-btn{
+  background:#3498DB;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:12px 24px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.search-btn:hover{
+  background:#2980B9;
+  transform:translateY(-1px);
+}
+.try-section{
+  font-size:12px;
+  color:#666;
+}
+.try-section a{
+  color:#3498DB;
+  text-decoration:none;
+  margin-left:4px;
+}
+.try-section a:hover{
+  text-decoration:underline;
+}
+.loading{
+  text-align:center;
+  color:#666;
+  padding:20px;
+}
+.error{
+  color:#e74c3c;
+  background:rgba(231,76,60,.1);
+  padding:12px;
+  border-radius:8px;
+  font-size:13px;
+}
+.empty{
+  text-align:center;
+  color:#666;
+  padding:20px;
+  font-size:13px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>Kalshi</h1>
+    <div class="health-badge" id="health-badge">\\u2022 checking</div>
+  </div>
+  <div class="subtitle">Prediction markets \\u2014 economics, politics, climate, tech</div>
+
+  <div class="card">
+    <div class="section-title">Active Markets</div>
+    <div id="markets-container" class="loading">Loading markets...</div>
+  </div>
+
+  <div class="category-tags">
+    <span class="tag">Economics</span>
+    <span class="tag">Politics</span>
+    <span class="tag">Climate</span>
+    <span class="tag">Tech</span>
+    <span class="tag">Science</span>
+  </div>
+
+  <div class="card">
+    <form class="search-form" onsubmit="handleSearch(event)">
+      <input type="text" class="search-input" id="search-input" placeholder="Fed rate" autocomplete="off">
+      <button type="submit" class="search-btn">\\u2192 search</button>
+    </form>
+    <div class="try-section">
+      Try:
+      <a href="#" onclick="quickSearch('GDP');return false">GDP</a> \\u00B7
+      <a href="#" onclick="quickSearch('inflation');return false">inflation</a> \\u00B7
+      <a href="#" onclick="quickSearch('S&P 500');return false">S&P 500</a> \\u00B7
+      <a href="#" onclick="quickSearch('election');return false">election</a>
+    </div>
+  </div>
+
+  <div id="search-results" style="display:none"></div>
+</div>
+
+<script>
+async function checkHealth() {
+  try {
+    const res = await fetch('/health');
+    const data = await res.json();
+    const badge = document.getElementById('health-badge');
+    if (data.status === 'healthy') {
+      badge.textContent = '\\u2022 healthy';
+      badge.style.background = 'rgba(46,204,113,.15)';
+      badge.style.color = '#2ecc71';
+    }
+  } catch (e) {
+    const badge = document.getElementById('health-badge');
+    badge.textContent = '\\u2022 error';
+    badge.style.background = 'rgba(231,76,60,.15)';
+    badge.style.color = '#e74c3c';
+  }
+}
+
+async function loadMarkets() {
+  const container = document.getElementById('markets-container');
+  try {
+    const res = await fetch('/markets?status=open&limit=5');
+    const data = await res.json();
+
+    if (!data.markets || data.markets.length === 0) {
+      container.innerHTML = '<div class="empty">No active markets found</div>';
+      return;
+    }
+
+    container.innerHTML = data.markets.map(m => {
+      const prob = m.yes_probability_pct || 50;
+      const yesPrice = m.yes_price || prob;
+      const noPrice = m.no_price || (100 - yesPrice);
+      const title = (m.title || 'Untitled Market').substring(0, 80);
+      const volume = m.volume ? `Vol: ${formatNumber(m.volume)}` : '';
+
+      return `
+        <div class="market-card">
+          <div class="market-title">${escapeHtml(title)}</div>
+          <div class="prob-bar-container">
+            <div class="prob-bar-fill" style="width:${prob}%">
+              <span class="prob-bar-pct">${prob}%</span>
+            </div>
+          </div>
+          <div class="price-text">Yes \\u00A2${yesPrice.toFixed(0)} / No \\u00A2${noPrice.toFixed(0)}</div>
+          ${volume ? `<div class="volume-text">${volume}</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  } catch (e) {
+    container.innerHTML = `<div class="error">Failed to load markets: ${e.message}</div>`;
+  }
+}
+
+function formatNumber(num) {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+  return num.toString();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+async function handleSearch(event) {
+  event.preventDefault();
+  const input = document.getElementById('search-input');
+  const query = input.value.trim();
+  if (!query) return;
+
+  await performSearch(query);
+}
+
+function quickSearch(query) {
+  document.getElementById('search-input').value = query;
+  performSearch(query);
+}
+
+async function performSearch(query) {
+  const resultsDiv = document.getElementById('search-results');
+  resultsDiv.style.display = 'block';
+  resultsDiv.innerHTML = '<div class="card loading">Searching...</div>';
+
+  try {
+    const res = await fetch(`/search?query=${encodeURIComponent(query)}&limit=10`);
+    const data = await res.json();
+
+    if (!data.results || data.results.length === 0) {
+      resultsDiv.innerHTML = `<div class="card empty">No results found for "${escapeHtml(query)}"</div>`;
+      return;
+    }
+
+    const html = `
+      <div class="card">
+        <div class="section-title">Search Results for "${escapeHtml(query)}" (${data.count})</div>
+        ${data.results.map(m => {
+          const prob = m.yes_probability_pct || 50;
+          const yesPrice = m.yes_price || prob;
+          const noPrice = 100 - yesPrice;
+          const title = (m.title || 'Untitled').substring(0, 80);
+          const volume = m.volume ? `Vol: ${formatNumber(m.volume)}` : '';
+
+          return `
+            <div class="market-card">
+              <div class="market-title">${escapeHtml(title)}</div>
+              <div class="prob-bar-container">
+                <div class="prob-bar-fill" style="width:${prob}%">
+                  <span class="prob-bar-pct">${prob}%</span>
+                </div>
+              </div>
+              <div class="price-text">Yes \\u00A2${yesPrice.toFixed(0)} / No \\u00A2${noPrice.toFixed(0)}</div>
+              ${volume ? `<div class="volume-text">${volume}</div>` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+    resultsDiv.innerHTML = html;
+  } catch (e) {
+    resultsDiv.innerHTML = `<div class="card error">Search failed: ${e.message}</div>`;
+  }
+}
+
+// Initialize
+checkHealth();
+loadMarkets();
+</script>
+</body>
+</html>
+"""
 
 
 def _ts() -> str:
@@ -52,19 +421,7 @@ async def _kalshi_request(path: str, params: dict | None = None) -> dict:
 
 @app.get("/")
 async def root():
-    return {
-        "name": "Kalshi Wrapper",
-        "description": "Prediction market data from Kalshi — event probabilities, market prices, and orderbooks for economics, politics, climate, tech, and more",
-        "endpoints": [
-            {"path": "/markets?status=open&limit=20", "description": "List prediction markets"},
-            {"path": "/market?ticker=KXHIGHNY-25JUN30-T75", "description": "Get market by ticker"},
-            {"path": "/events?limit=20", "description": "List events"},
-            {"path": "/event?ticker=KXHIGHNY", "description": "Get event by ticker"},
-            {"path": "/orderbook?ticker=KXHIGHNY-25JUN30-T75", "description": "Get market orderbook"},
-            {"path": "/search?query=fed rate", "description": "Search markets"},
-            {"path": "/health", "description": "Health check"},
-        ],
-    }
+    return HTMLResponse(content=HOME_HTML)
 
 
 @app.get("/health")
