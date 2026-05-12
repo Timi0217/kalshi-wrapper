@@ -34,130 +34,147 @@ HOME_HTML = """<!DOCTYPE html>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  background:#0D1117;
-  color:#e8e8e8;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:#0a0a0a;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   padding:40px 20px;
   line-height:1.6;
+  animation:fadeIn 0.6s ease-out;
+}
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
 }
 .container{
-  max-width:720px;
+  max-width:600px;
   margin:0 auto;
 }
 .header{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  margin-bottom:8px;
+  justify-content:space-between;
+  margin-bottom:12px;
 }
-h1{
-  font-family:'SF Mono',Monaco,Consolas,monospace;
-  font-size:28px;
-  color:#00D632;
+.brand-group{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.brand-icon{
+  width:48px;
+  height:48px;
+  border-radius:14px;
+  background:linear-gradient(135deg, #00D632, #00A828);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:800;
+  color:#0a0a0a;
+}
+.brand-text h1{
+  font-size:24px;
   font-weight:700;
-  letter-spacing:-0.5px;
+  color:#fff;
+  margin-bottom:2px;
 }
-.health{
-  font-family:'SF Mono',Monaco,Consolas,monospace;
+.brand-text .subtitle{
   font-size:13px;
-  color:#8B949E;
+  color:#555;
+  line-height:1.3;
+}
+.health-badge{
   display:flex;
   align-items:center;
   gap:6px;
-}
-.health .d{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#3d444d;
-  transition:background .3s;
-}
-.health .d.on{
-  background:#00D632;
-  box-shadow:0 0 8px rgba(0,214,50,0.4);
-}
-.subtitle{
-  color:#8B949E;
-  font-size:14px;
-  margin-bottom:28px;
-}
-.category-pills{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:32px;
-}
-.pill{
-  background:rgba(255,255,255,0.04);
-  color:#8B949E;
-  padding:7px 14px;
-  border-radius:20px;
   font-size:12px;
-  font-weight:500;
-  border:1px solid rgba(255,255,255,0.08);
-  transition:all 0.2s ease;
-  cursor:pointer;
+  color:#555;
 }
-.pill:hover{
-  background:rgba(0,214,50,0.08);
-  color:#00D632;
-  border-color:rgba(0,214,50,0.3);
+.health-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#333;
+  transition:background 0.3s;
 }
-.section-header{
+.health-dot.on{
+  background:#00D632;
+  box-shadow:0 0 8px rgba(0,214,50,0.5);
+}
+.section-label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  color:#555;
+  font-weight:600;
+  margin:32px 0 16px 0;
   display:flex;
   align-items:center;
   gap:10px;
-  margin-bottom:20px;
 }
-.section-title{
-  font-size:18px;
+.live-badge{
+  background:linear-gradient(135deg, #00D632, #00A828);
+  color:#0a0a0a;
+  font-size:9px;
+  padding:3px 8px;
+  border-radius:4px;
   font-weight:700;
-  color:#e8e8e8;
-  letter-spacing:-0.3px;
+  letter-spacing:1px;
 }
-.trending-badge{
-  background:linear-gradient(135deg, #00D632 0%, #00A828 100%);
-  color:#0D1117;
-  font-size:10px;
-  font-weight:700;
-  padding:4px 8px;
-  border-radius:6px;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
+.category-chips{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:24px 0;
+}
+.chip{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:20px;
+  padding:5px 14px;
+  font-size:12px;
+  color:#555;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.chip:hover{
+  border-color:rgba(0,214,50,0.4);
+  color:#00D632;
 }
 .markets-grid{
   display:grid;
-  grid-template-columns:1fr;
   gap:12px;
-  margin-bottom:40px;
+  margin-bottom:32px;
 }
 .market-card{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;
   padding:18px;
-  transition:all 0.2s ease;
-  position:relative;
-  overflow:hidden;
+  transition:all 0.3s ease;
+  animation:fadeInUp 0.5s ease-out;
+  animation-fill-mode:both;
+}
+.market-card:nth-child(1){animation-delay:0.05s}
+.market-card:nth-child(2){animation-delay:0.1s}
+.market-card:nth-child(3){animation-delay:0.15s}
+.market-card:nth-child(4){animation-delay:0.2s}
+.market-card:nth-child(5){animation-delay:0.25s}
+.market-card:nth-child(6){animation-delay:0.3s}
+@keyframes fadeInUp{
+  from{
+    opacity:0;
+    transform:translateY(20px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
 .market-card:hover{
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(0,214,50,0.3);
-  transform:translateY(-1px);
-}
-.market-card::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:2px;
-  background:linear-gradient(90deg, transparent, rgba(0,214,50,0.3), transparent);
-  opacity:0;
-  transition:opacity 0.3s;
-}
-.market-card:hover::before{
-  opacity:1;
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.12);
+  transform:translateY(-2px);
 }
 .category-tag{
   display:inline-block;
@@ -179,63 +196,47 @@ h1{
 .cat-commodities{background:rgba(149,117,205,0.15);color:#9575cd}
 .cat-default{background:rgba(139,148,158,0.15);color:#8B949E}
 .market-title{
-  font-size:15px;
+  font-size:14px;
   font-weight:600;
-  color:#ffffff;
-  margin-bottom:14px;
+  color:#fff;
+  margin-bottom:12px;
   line-height:1.4;
 }
 .prob-bar-container{
-  background:rgba(255,255,255,0.05);
-  height:28px;
-  border-radius:8px;
+  background:rgba(255,255,255,0.04);
+  height:26px;
+  border-radius:6px;
   overflow:hidden;
   position:relative;
   margin-bottom:10px;
 }
 .prob-bar-fill{
-  background:linear-gradient(90deg, #00D632 0%, #00A828 100%);
+  background:linear-gradient(90deg, #00D632, #00A828);
   height:100%;
   transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
   display:flex;
   align-items:center;
   justify-content:flex-end;
   padding:0 10px;
-  position:relative;
 }
-.prob-bar-fill::after{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  bottom:0;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  animation:shimmer 2s infinite;
-}
-@keyframes shimmer{
-  0%{transform:translateX(-100%)}
-  100%{transform:translateX(100%)}
-}
-.prob-bar-pct{
-  color:#0D1117;
+.prob-pct{
+  color:#0a0a0a;
   font-size:12px;
   font-weight:700;
   font-family:'SF Mono',Monaco,Consolas,monospace;
-  position:relative;
   z-index:1;
 }
 .volume-text{
   font-size:12px;
-  color:#8B949E;
+  color:#444;
   font-family:'SF Mono',Monaco,Consolas,monospace;
 }
-.search-section{
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:12px;
+.search-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;
   padding:24px;
-  margin-top:40px;
+  margin-top:32px;
 }
 .search-form{
   display:flex;
@@ -244,26 +245,25 @@ h1{
 }
 .search-input{
   flex:1;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
   border-radius:10px;
   padding:12px 16px;
-  color:#e8e8e8;
+  color:#fff;
   font-size:14px;
   outline:none;
   transition:all 0.2s;
 }
 .search-input:focus{
-  border-color:#00D632;
-  background:rgba(255,255,255,0.08);
-  box-shadow:0 0 0 3px rgba(0,214,50,0.1);
+  border-color:rgba(0,214,50,0.4);
+  background:rgba(255,255,255,0.06);
 }
 .search-input::placeholder{
-  color:#6e7681;
+  color:#555;
 }
 .search-btn{
-  background:#00D632;
-  color:#0D1117;
+  background:linear-gradient(135deg, #00D632, #00A828);
+  color:#0a0a0a;
   border:none;
   border-radius:10px;
   padding:12px 24px;
@@ -271,35 +271,36 @@ h1{
   font-weight:700;
   cursor:pointer;
   transition:all 0.2s;
-  display:flex;
-  align-items:center;
-  gap:6px;
 }
 .search-btn:hover{
-  background:#00F53C;
   transform:translateY(-1px);
-  box-shadow:0 4px 12px rgba(0,214,50,0.3);
+  box-shadow:0 4px 16px rgba(0,214,50,0.3);
 }
 .search-btn:active{
   transform:translateY(0);
 }
-.quick-links{
-  font-size:13px;
-  color:#6e7681;
+.quick-pills{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
 }
-.quick-links a{
-  color:#00D632;
+.quick-pill{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;
+  padding:4px 12px;
+  font-size:11px;
+  color:#555;
   text-decoration:none;
-  font-weight:500;
-  transition:color 0.2s;
+  transition:all 0.2s;
 }
-.quick-links a:hover{
-  color:#00F53C;
-  text-decoration:underline;
+.quick-pill:hover{
+  border-color:rgba(0,214,50,0.4);
+  color:#00D632;
 }
 .loading{
   text-align:center;
-  color:#6e7681;
+  color:#555;
   padding:32px;
   font-size:14px;
 }
@@ -317,79 +318,66 @@ h1{
   color:#f85149;
   background:rgba(248,81,73,0.1);
   padding:16px;
-  border-radius:8px;
+  border-radius:10px;
   font-size:13px;
   border:1px solid rgba(248,81,73,0.3);
 }
 .empty{
   text-align:center;
-  color:#6e7681;
+  color:#555;
   padding:32px;
   font-size:14px;
 }
 #search-results{
   margin-top:20px;
 }
-@keyframes fadeInUp{
-  from{
-    opacity:0;
-    transform:translateY(20px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-.market-card{
-  animation:fadeInUp 0.4s ease-out;
-  animation-fill-mode:both;
-}
-.market-card:nth-child(1){animation-delay:0.05s}
-.market-card:nth-child(2){animation-delay:0.1s}
-.market-card:nth-child(3){animation-delay:0.15s}
-.market-card:nth-child(4){animation-delay:0.2s}
-.market-card:nth-child(5){animation-delay:0.25s}
-.market-card:nth-child(6){animation-delay:0.3s}
 </style>
 </head>
 <body>
 <div class="container">
   <div class="header">
-    <h1>Kalshi</h1>
-    <div class="health"><span class="d" id="dot"></span><span id="health-text">connecting...</span></div>
-  </div>
-  <div class="subtitle">Prediction markets — economics, politics, climate, tech</div>
-
-  <div class="category-pills">
-    <span class="pill">Trending</span>
-    <span class="pill">Economics</span>
-    <span class="pill">Politics</span>
-    <span class="pill">Climate</span>
-    <span class="pill">Tech</span>
-    <span class="pill">Entertainment</span>
-    <span class="pill">Sports</span>
+    <div class="brand-group">
+      <div class="brand-icon">K</div>
+      <div class="brand-text">
+        <h1>Kalshi</h1>
+        <div class="subtitle">Regulated prediction markets — economics, politics, climate, tech</div>
+      </div>
+    </div>
+    <div class="health-badge">
+      <span class="health-dot" id="dot"></span>
+      <span id="health-text">connecting...</span>
+    </div>
   </div>
 
-  <div class="section-header">
-    <div class="section-title">Trending</div>
-    <div class="trending-badge">Live</div>
+  <div class="category-chips">
+    <span class="chip">Trending</span>
+    <span class="chip">Economics</span>
+    <span class="chip">Politics</span>
+    <span class="chip">Climate</span>
+    <span class="chip">Tech</span>
+    <span class="chip">Entertainment</span>
+    <span class="chip">Sports</span>
+  </div>
+
+  <div class="section-label">
+    TRENDING MARKETS
+    <span class="live-badge">LIVE</span>
   </div>
 
   <div class="markets-grid" id="trending-container">
     <div class="loading">Loading trending markets</div>
   </div>
 
-  <div class="search-section">
+  <div class="search-card">
     <form class="search-form" onsubmit="handleSearch(event)">
       <input type="text" class="search-input" id="search-input" placeholder="Search markets... (e.g., 'Fed rate', 'inflation')" autocomplete="off">
-      <button type="submit" class="search-btn">→ Search</button>
+      <button type="submit" class="search-btn">Search</button>
     </form>
-    <div class="quick-links">
-      Try:
-      <a href="#" onclick="quickSearch('GDP');return false">GDP</a> ·
-      <a href="#" onclick="quickSearch('inflation');return false">inflation</a> ·
-      <a href="#" onclick="quickSearch('S&P 500');return false">S&P 500</a> ·
-      <a href="#" onclick="quickSearch('election');return false">election</a>
+    <div class="quick-pills">
+      <a href="#" class="quick-pill" onclick="quickSearch('GDP');return false">GDP</a>
+      <a href="#" class="quick-pill" onclick="quickSearch('inflation');return false">inflation</a>
+      <a href="#" class="quick-pill" onclick="quickSearch('S&P 500');return false">S&P 500</a>
+      <a href="#" class="quick-pill" onclick="quickSearch('election');return false">election</a>
     </div>
   </div>
 
@@ -434,7 +422,7 @@ async function loadTrending() {
           <div class="market-title">${escapeHtml(title)}</div>
           <div class="prob-bar-container">
             <div class="prob-bar-fill" style="width:${prob}%">
-              <span class="prob-bar-pct">${prob}%</span>
+              <span class="prob-pct">${prob}%</span>
             </div>
           </div>
           <div class="volume-text">Vol $${volume}</div>
@@ -486,8 +474,8 @@ async function performSearch(query) {
     }
 
     const html = `
-      <div class="section-header" style="margin-top:40px">
-        <div class="section-title">Search Results</div>
+      <div class="section-label" style="margin-top:40px">
+        SEARCH RESULTS
       </div>
       <div class="markets-grid">
         ${data.results.map(m => {
@@ -504,7 +492,7 @@ async function performSearch(query) {
               <div class="market-title">${escapeHtml(title)}</div>
               <div class="prob-bar-container">
                 <div class="prob-bar-fill" style="width:${prob}%">
-                  <span class="prob-bar-pct">${prob}%</span>
+                  <span class="prob-pct">${prob}%</span>
                 </div>
               </div>
               <div class="volume-text">Vol $${volume}</div>
